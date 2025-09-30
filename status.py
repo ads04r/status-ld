@@ -197,12 +197,18 @@ for k, v in network().items():
 for k, v in temperature().items():
 	data[prop + 'temperature-' + k] = v
 #for k, v in backupcheck().items():
-#	data[k] = v
+#       data[k] = v
 if 'apis' in config:
 	for kk in config['apis'].keys():
 		k = str(kk)
-		data[k] = getremotejson(config['apis'][k])
+		v = getremotejson(config['apis'][k])
+		if isinstance(v, dict):
+			for kk, vv in v.items():
+				if isinstance(vv, dict):
+					continue
+				data[(prop + k + '-' + kk.replace('_', '-')).strip().lower()] = vv
+			continue
+		data[prop + k] = v
 
 publish(config['database'], config['token'], [data])
-
 
